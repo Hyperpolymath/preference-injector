@@ -4,75 +4,163 @@ Thank you for your interest in contributing to Preference Injector! This documen
 
 ## Code of Conduct
 
-By participating in this project, you agree to maintain a respectful and inclusive environment for all contributors.
+**Please read CODE_OF_CONDUCT.md before contributing.**
+
+This project prioritizes emotional safety and uses the **Tri-Perimeter Contribution Framework (TPCF)** to reduce anxiety and encourage experimentation.
+
+## Tri-Perimeter Contribution Framework (TPCF)
+
+### You are starting in **Perimeter 3: Community Sandbox** 🎉
+
+- ✅ **Fork, clone, experiment freely**
+- ✅ **Open issues and submit PRs**
+- ✅ **Low anxiety** - all changes are reversible via Git
+- ✅ **High experimentation** - breaking things is learning!
+- ⚠️ Cannot commit directly to main branch (protection)
+
+### Path to Perimeter 2: Trusted Contributor
+
+After **3+ merged PRs** and **30+ days** of contribution:
+- ✅ Direct commits to feature branches
+- ✅ Triage and label issues
+- ✅ Review PRs from Perimeter 3
+- 🔄 Automatic promotion (no vote required)
+
+### Path to Perimeter 1: Core Maintainer
+
+Demonstrated leadership + nomination + 2/3 vote:
+- ✅ Merge to main branch
+- ✅ Release management
+- ✅ Security triage
+- 👥 See MAINTAINERS.md for details
 
 ## Getting Started
 
 ### Prerequisites
 
-- Node.js 16.x or higher
-- npm or yarn
+- **Deno** 1.x or higher (we migrated from Node.js!)
+- **Just** command runner (replaces npm scripts)
 - Git
+- (Optional) **Nix** for reproducible builds
+- (Optional) **ReScript** for functional programming modules
 
-### Development Setup
+### Development Setup (Quick Start)
 
-1. Fork the repository
-2. Clone your fork:
+1. **Fork and clone** the repository:
    ```bash
    git clone https://github.com/YOUR_USERNAME/preference-injector.git
    cd preference-injector
    ```
 
-3. Install dependencies:
+2. **Install dependencies**:
    ```bash
-   npm install
+   just install
+   # or manually: deno cache src/deps.ts
    ```
 
-4. Create a branch:
+3. **Verify RSR compliance** (optional but recommended):
    ```bash
-   git checkout -b feature/your-feature-name
+   just rsr-verify
    ```
+
+4. **Start developing**:
+   ```bash
+   just dev
+   ```
+
+### Using Nix (Recommended for Reproducibility)
+
+```bash
+# Enter development shell with all dependencies
+nix develop
+
+# Build the project
+nix build
+
+# Run checks
+nix flake check
+```
 
 ## Development Workflow
+
+### Using Just (Recommended)
+
+We use **Just** as our command runner. See all available commands:
+
+```bash
+just --list
+```
 
 ### Running Tests
 
 ```bash
 # Run all tests
-npm test
+just test
 
 # Run tests in watch mode
-npm run test:watch
+just test-watch
 
 # Generate coverage report
-npm run test:coverage
+just test-coverage
 ```
 
 ### Building
 
 ```bash
-# Build the project
-npm run build
+# Build TypeScript
+just build
+
+# Build ReScript
+just build-rescript
+
+# Build everything
+just build-all
 
 # Clean build artifacts
-npm run clean
+just clean
 ```
 
 ### Linting and Formatting
 
 ```bash
-# Run ESLint
-npm run lint
+# Run linter
+just lint
 
-# Fix linting issues
-npm run lint:fix
-
-# Check formatting
-npm run format:check
+# Auto-fix linting issues
+just lint-fix
 
 # Format code
-npm run format
+just fmt
+
+# Check formatting
+just fmt-check
+
+# Run all checks (lint + format + types)
+just check-all
 ```
+
+## RSR Compliance
+
+This project follows the **Rhodium Standard Repository (RSR) Framework**. Before submitting PRs, please verify compliance:
+
+```bash
+# Check RSR compliance
+just rsr-verify
+
+# Calculate compliance score
+just rsr-score
+```
+
+### Required Files (Bronze Level)
+
+Ensure these files exist and are up-to-date:
+- ✅ `SECURITY.md` - Security policies
+- ✅ `CODE_OF_CONDUCT.md` - Community guidelines
+- ✅ `MAINTAINERS.md` - Governance and TPCF
+- ✅ `.well-known/security.txt` - RFC 9116 security contact
+- ✅ `.well-known/ai.txt` - AI training policies
+- ✅ `.well-known/humans.txt` - Human contributors
+- ✅ `PALIMPSEST-LICENSE.txt` - Dual licensing
 
 ## Coding Standards
 

@@ -1,0 +1,199 @@
+Palimpsest License v0.8
+========================
+
+Copyright (c) 2024 Hyperpolymath and Contributors
+
+PREAMBLE
+
+The Palimpsest License is a copyleft license designed to ensure that software
+remains free and that derivative works preserve freedom while respecting the
+layered nature of software development. Like a palimpsest (a manuscript page
+that has been written on multiple times, with earlier text showing through),
+this license acknowledges that software is built in layers, with each
+contribution adding to and modifying what came before.
+
+TERMS AND CONDITIONS
+
+1. DEFINITIONS
+
+   "Original Work" refers to the software distributed under this License.
+
+   "Derivative Work" refers to any work based upon the Original Work,
+   including but not limited to modifications, translations, adaptations,
+   and works that incorporate all or part of the Original Work.
+
+   "Layer" refers to a distinct contribution or modification to the software,
+   which may coexist with previous layers while adding new functionality.
+
+   "You" (or "Your") refers to an individual or legal entity exercising
+   permissions granted by this License.
+
+   "Source Code" means the preferred form for making modifications to the work.
+
+2. GRANT OF COPYRIGHT LICENSE
+
+   Subject to the terms of this License, each Contributor hereby grants to You
+   a perpetual, worldwide, non-exclusive, no-charge, royalty-free, irrevocable
+   copyright license to:
+
+   a) Use the Original Work
+   b) Reproduce the Original Work
+   c) Prepare Derivative Works
+   d) Publicly display the Original Work
+   e) Publicly perform the Original Work
+   f) Distribute copies of the Original Work
+
+3. GRANT OF PATENT LICENSE
+
+   Each Contributor grants You a perpetual, worldwide, non-exclusive, no-charge,
+   royalty-free, irrevocable patent license to make, have made, use, offer to
+   sell, sell, import, and otherwise transfer the Original Work.
+
+4. ATTRIBUTION REQUIREMENTS
+
+   a) You must retain all copyright, patent, trademark, and attribution notices
+      from the Source Code in any Derivative Works You create.
+
+   b) You must include a prominent notice stating that You modified the files,
+      including the date of modification.
+
+   c) You must preserve the "layer structure" by maintaining a CHANGELOG or
+      similar documentation that tracks modifications across versions and
+      contributors.
+
+5. COPYLEFT PROVISIONS
+
+   a) Any Derivative Work must be distributed under the terms of this License
+      or a compatible copyleft license (such as GPL v3+, AGPL v3+, or EPL 2.0).
+
+   b) You must make the Source Code of any Derivative Work You distribute
+      available under this License.
+
+   c) If You distribute the Original Work or Derivative Works, You must include
+      a copy of this License and make clear that recipients have the rights
+      granted by this License.
+
+6. PALIMPSEST PRINCIPLE
+
+   In recognition that software is built in layers:
+
+   a) You may add new "layers" (features, modules, extensions) to the software
+      without modifying existing layers, provided that:
+      - The new layer is clearly documented as separate
+      - The original layers remain accessible and functional
+      - The combined work is distributed under this License
+
+   b) When modifying existing layers, you must:
+      - Document what was changed and why
+      - Preserve backward compatibility where reasonably possible
+      - Maintain the ability for users to access or restore previous layers
+
+7. NETWORK USE PROVISION (Affero-like)
+
+   If You run a modified version of the Original Work on a server and allow
+   users to interact with it remotely through a network, You must provide
+   those users with access to the Source Code of Your modified version.
+
+8. COMPATIBILITY WITH OTHER LICENSES
+
+   This License is designed to be compatible with:
+   - GNU General Public License v3.0 or later
+   - GNU Affero General Public License v3.0 or later
+   - Eclipse Public License 2.0
+   - Mozilla Public License 2.0
+
+   You may redistribute works under this License under the terms of these
+   compatible licenses.
+
+9. TIVOIZATION PREVENTION
+
+   You may not use technical measures to prevent users from running modified
+   versions of the software on hardware that normally runs the Original Work.
+   Installation information must be provided if technically feasible.
+
+10. NO WARRANTY
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+
+11. LIMITATION OF LIABILITY
+
+    IN NO EVENT WILL ANY CONTRIBUTOR BE LIABLE TO YOU FOR ANY DAMAGES, INCLUDING
+    ANY GENERAL, SPECIAL, INCIDENTAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF THE
+    USE OR INABILITY TO USE THE SOFTWARE, EVEN IF SUCH CONTRIBUTOR HAS BEEN
+    ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
+
+12. TERMINATION
+
+    This License is effective until terminated. Your rights under this License
+    will terminate automatically without notice if You fail to comply with any
+    of its terms. Upon termination, You must destroy all copies of the Original
+    Work and Derivative Works in Your possession or control.
+
+    However, if You cure the violation within 30 days of becoming aware of it,
+    Your rights are automatically reinstated.
+
+13. ETHICAL USE CLAUSE
+
+    You may not use the Original Work for purposes that:
+    a) Violate human rights as defined by the Universal Declaration of Human Rights
+    b) Facilitate surveillance or oppression
+    c) Contribute to environmental destruction
+    d) Support military applications designed to harm civilians
+
+    This clause may be waived for specific uses with written permission from the
+    original copyright holders.
+
+14. REVISION AND VERSIONING
+
+    The Palimpsest License may be revised from time to time. Each version will
+    be given a distinguishing version number. You may distribute the Original
+    Work under the terms of the version of the License under which You received
+    it, or any later version.
+
+15. MISCELLANEOUS
+
+    This License represents the complete agreement concerning the subject matter
+    hereof. If any provision of this License is held to be unenforceable, such
+    provision shall be reformed only to the extent necessary to make it enforceable.
+
+    This License shall be governed by the laws of the jurisdiction where the
+    Original Work was first published, without regard to conflict of law provisions.
+
+HOW TO APPLY THIS LICENSE
+
+To apply the Palimpsest License to your work, attach the following notice,
+with the fields enclosed by brackets "[]" replaced with your own identifying
+information:
+
+    Copyright [year] [name of copyright owner]
+
+    Licensed under the Palimpsest License, Version 0.8 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        https://example.com/licenses/palimpsest-0.8.txt
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+DUAL LICENSING
+
+This software is dual-licensed under both:
+- MIT License (permissive)
+- Palimpsest License v0.8 (copyleft)
+
+You may choose which license to use. However, if you create a Derivative Work,
+you must comply with the chosen license's requirements for distribution.
+
+---
+
+END OF PALIMPSEST LICENSE v0.8

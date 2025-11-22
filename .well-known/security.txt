@@ -1,0 +1,25 @@
+# RFC 9116 Security Contact Information
+# https://securitytxt.org/
+
+Contact: mailto:security@example.com
+Contact: https://github.com/Hyperpolymath/preference-injector/security/advisories/new
+Expires: 2025-01-15T00:00:00.000Z
+Encryption: https://example.com/.well-known/pgp-key.txt
+Preferred-Languages: en
+Canonical: https://example.com/.well-known/security.txt
+
+# Security Policy
+Policy: https://github.com/Hyperpolymath/preference-injector/blob/main/SECURITY.md
+
+# Acknowledgments
+Acknowledgments: https://github.com/Hyperpolymath/preference-injector/blob/main/SECURITY.md#acknowledgments
+
+# Hiring (Optional)
+# Hiring: https://example.com/careers/security
+
+# Post-Quantum Security Notice
+# This project implements post-quantum cryptography:
+# - Ed448 for signatures
+# - Kyber1024 for key exchange
+# - BLAKE3 for hashing
+# Please report quantum-vulnerable code immediately.
