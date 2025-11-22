@@ -1,0 +1,953 @@
+# Universal Job & Educational Application Standard
+# Post-Quantum Secure, CUE-Compatible, AI-Assisted Application System
+
+scalar DateTime
+scalar JSON
+scalar CUEDocument
+scalar Ed448Signature
+scalar KyberCiphertext
+scalar BLAKE3Hash
+
+# ============================================================================
+# CORE APPLICATION TYPES
+# ============================================================================
+
+type Application {
+  id: ID!
+  applicationId: BLAKE3Hash!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  submittedAt: DateTime
+  status: ApplicationStatus!
+
+  # Core applicant data
+  applicant: Applicant!
+
+  # Position/Program details
+  target: ApplicationTarget!
+
+  # Application sections
+  personalStatement: PersonalStatement
+  employmentHistory: [Employment!]!
+  educationHistory: [Education!]!
+  skills: [Skill!]!
+  certifications: [Certification!]!
+  references: [Reference!]!
+  customFields: [CustomField!]!
+
+  # Attestations and verifications
+  attestations: [Attestation!]!
+  verifications: [Verification!]!
+
+  # Metadata
+  completeness: Float!
+  validationResult: ValidationResult!
+  preferences: ApplicationPreferences!
+
+  # Temporal tracking
+  version: Int!
+  history: [ApplicationHistory!]!
+
+  # Security
+  signature: Ed448Signature
+  encrypted: Boolean!
+}
+
+enum ApplicationStatus {
+  DRAFT
+  IN_PROGRESS
+  SUBMITTED
+  UNDER_REVIEW
+  ACCEPTED
+  REJECTED
+  WITHDRAWN
+}
+
+# ============================================================================
+# APPLICANT INFORMATION
+# ============================================================================
+
+type Applicant {
+  id: ID!
+
+  # Personal Information (PII - requires encryption)
+  personalInfo: PersonalInfo!
+
+  # Contact Information
+  contactInfo: ContactInfo!
+
+  # External Profiles
+  linkedInProfile: LinkedInProfile
+  githubProfile: GitHubProfile
+  portfolioUrls: [String!]
+
+  # Document verification
+  documents: [VerifiedDocument!]!
+
+  # Preferences
+  privacySettings: PrivacySettings!
+  autoFillPreferences: AutoFillPreferences!
+}
+
+type PersonalInfo {
+  # Basic demographics
+  firstName: String!
+  middleName: String
+  lastName: String!
+  preferredName: String
+  dateOfBirth: DateTime
+  nationality: String
+
+  # Government identifiers (encrypted)
+  passportNumber: String
+  drivingLicenseNumber: String
+  nationalInsuranceNumber: String
+
+  # Sensitive fields (optionally filled)
+  criminalRecordDisclosure: String
+  disabilityDisclosure: String
+  veteranStatus: String
+
+  # Verification status
+  verified: Boolean!
+  verificationMethod: VerificationMethod
+}
+
+enum VerificationMethod {
+  EMAIL
+  GOVERNMENT_ID
+  PASSPORT
+  DRIVING_LICENSE
+  PROFESSIONAL_REGISTRATION
+  LINKEDIN_VERIFIED
+  EMPLOYER_VERIFIED
+  EDUCATIONAL_INSTITUTION
+}
+
+type ContactInfo {
+  email: String!
+  emailVerified: Boolean!
+  phoneNumber: String
+  phoneVerified: Boolean!
+
+  address: Address
+  emergencyContact: EmergencyContact
+}
+
+type Address {
+  street: String!
+  city: String!
+  state: String
+  postalCode: String!
+  country: String!
+
+  # Temporal validity
+  validFrom: DateTime
+  validTo: DateTime
+}
+
+type EmergencyContact {
+  name: String!
+  relationship: String!
+  phoneNumber: String!
+  email: String
+}
+
+# ============================================================================
+# APPLICATION TARGET (Job/Education Program)
+# ============================================================================
+
+type ApplicationTarget {
+  id: ID!
+  type: ApplicationType!
+
+  # Job application fields
+  position: String
+  company: Company
+  jobDescription: String
+  salaryRange: SalaryRange
+
+  # Educational application fields
+  institution: EducationalInstitution
+  program: String
+  degreeLevel: DegreeLevel
+
+  # Application requirements
+  requirements: ApplicationRequirements!
+
+  # Deadline
+  deadline: DateTime
+
+  # Location
+  location: Location
+  workMode: WorkMode
+}
+
+enum ApplicationType {
+  JOB
+  INTERNSHIP
+  EDUCATIONAL_PROGRAM
+  SCHOLARSHIP
+  FELLOWSHIP
+  VOLUNTEER
+}
+
+enum WorkMode {
+  REMOTE
+  HYBRID
+  ON_SITE
+}
+
+enum DegreeLevel {
+  CERTIFICATE
+  ASSOCIATE
+  BACHELOR
+  MASTER
+  DOCTORATE
+  POST_DOCTORATE
+}
+
+type Company {
+  id: ID!
+  name: String!
+  industry: String
+  size: CompanySize
+  website: String
+  linkedInUrl: String
+
+  # Preference script integration
+  preferenceScriptUrl: String
+  cueSchema: CUEDocument
+}
+
+enum CompanySize {
+  STARTUP
+  SMALL
+  MEDIUM
+  LARGE
+  ENTERPRISE
+}
+
+type EducationalInstitution {
+  id: ID!
+  name: String!
+  type: InstitutionType!
+  accreditation: [String!]
+  country: String!
+  website: String
+}
+
+enum InstitutionType {
+  UNIVERSITY
+  COLLEGE
+  VOCATIONAL_SCHOOL
+  ONLINE_PLATFORM
+  BOOTCAMP
+}
+
+# ============================================================================
+# APPLICATION REQUIREMENTS & VALIDATION
+# ============================================================================
+
+type ApplicationRequirements {
+  # Auto-fill permissions
+  autoFillAllowed: AutoFillPermissions!
+
+  # Required fields
+  requiredFields: [RequiredField!]!
+
+  # Field constraints
+  fieldConstraints: [FieldConstraint!]!
+
+  # Document requirements
+  requiredDocuments: [DocumentRequirement!]!
+
+  # Verification requirements
+  requiredVerifications: [VerificationType!]!
+
+  # AI assistance policy
+  aiAssistancePolicy: AIAssistancePolicy!
+
+  # Validation rules (CUE-based)
+  validationSchema: CUEDocument!
+}
+
+type AutoFillPermissions {
+  personalInfo: Boolean!
+  dateOfBirth: Boolean!
+  contactInfo: Boolean!
+  employmentHistory: Boolean!
+  educationHistory: Boolean!
+  skills: Boolean!
+  certifications: Boolean!
+  references: Boolean!
+
+  # Restrictions
+  disallowedFields: [String!]!
+  requireManualAttestation: [String!]!
+}
+
+type RequiredField {
+  fieldName: String!
+  fieldPath: String!
+  dataType: FieldDataType!
+  required: Boolean!
+  optional: Boolean!
+}
+
+enum FieldDataType {
+  STRING
+  NUMBER
+  DATE
+  BOOLEAN
+  EMAIL
+  URL
+  PHONE
+  ADDRESS
+  DOCUMENT
+  RICH_TEXT
+}
+
+type FieldConstraint {
+  fieldName: String!
+  constraintType: ConstraintType!
+  value: JSON!
+  errorMessage: String
+}
+
+enum ConstraintType {
+  MAX_LENGTH
+  MIN_LENGTH
+  WORD_COUNT
+  PATTERN
+  ENUM
+  DATE_RANGE
+  NUMBER_RANGE
+  REQUIRED_IF
+  FILE_SIZE
+  FILE_TYPE
+}
+
+type DocumentRequirement {
+  documentType: String!
+  required: Boolean!
+  acceptedFormats: [String!]!
+  maxSize: Int
+  verificationRequired: Boolean!
+}
+
+enum VerificationType {
+  EMAIL_VERIFICATION
+  PHONE_VERIFICATION
+  GOVERNMENT_ID
+  PROFESSIONAL_REGISTRATION
+  EMPLOYMENT_VERIFICATION
+  EDUCATION_VERIFICATION
+  REFERENCE_CHECK
+  BACKGROUND_CHECK
+}
+
+type AIAssistancePolicy {
+  allowSpellCheck: Boolean!
+  allowGrammarCheck: Boolean!
+  allowAIWriting: Boolean!
+  allowAIRewriting: Boolean!
+  allowAutoComplete: Boolean!
+
+  # Disclosure requirements
+  requireAIDisclosure: Boolean!
+  allowedAITools: [String!]
+}
+
+# ============================================================================
+# EMPLOYMENT HISTORY
+# ============================================================================
+
+type Employment {
+  id: ID!
+
+  # Company details
+  company: String!
+  position: String!
+  department: String
+
+  # Dates
+  startDate: DateTime!
+  endDate: DateTime
+  current: Boolean!
+
+  # Location
+  location: Location
+  workMode: WorkMode
+
+  # Description
+  description: String
+  achievements: [String!]
+  responsibilities: [String!]
+
+  # Skills used
+  skillsUsed: [String!]
+  technologies: [String!]
+
+  # Verification
+  verified: Boolean!
+  verificationMethod: VerificationMethod
+  verificationContact: ContactInfo
+
+  # References
+  canContact: Boolean!
+  reference: Reference
+
+  # Temporal tracking
+  version: Int!
+  lastUpdated: DateTime!
+}
+
+# ============================================================================
+# EDUCATION HISTORY
+# ============================================================================
+
+type Education {
+  id: ID!
+
+  # Institution
+  institution: String!
+  institutionType: InstitutionType!
+  location: Location
+
+  # Degree/Qualification
+  degree: String!
+  degreeLevel: DegreeLevel!
+  fieldOfStudy: String!
+  specialization: String
+
+  # Dates
+  startDate: DateTime!
+  endDate: DateTime
+  graduationDate: DateTime
+  current: Boolean!
+
+  # Performance
+  gpa: Float
+  gpaScale: Float
+  honors: [String!]
+  awards: [String!]
+
+  # Additional details
+  thesis: String
+  relevantCoursework: [String!]
+  activities: [String!]
+
+  # Verification
+  verified: Boolean!
+  verificationMethod: VerificationMethod
+  transcriptAvailable: Boolean!
+}
+
+# ============================================================================
+# SKILLS & CERTIFICATIONS
+# ============================================================================
+
+type Skill {
+  id: ID!
+  name: String!
+  category: SkillCategory!
+  proficiencyLevel: ProficiencyLevel!
+  yearsOfExperience: Float
+  lastUsed: DateTime
+
+  # Verification
+  verified: Boolean!
+  endorsements: [Endorsement!]
+  certifications: [ID!]
+}
+
+enum SkillCategory {
+  TECHNICAL
+  SOFT_SKILL
+  LANGUAGE
+  TOOL
+  FRAMEWORK
+  METHODOLOGY
+  DOMAIN_KNOWLEDGE
+}
+
+enum ProficiencyLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+  EXPERT
+}
+
+type Certification {
+  id: ID!
+  name: String!
+  issuingOrganization: String!
+  issueDate: DateTime!
+  expirationDate: DateTime
+  credentialId: String
+  credentialUrl: String
+
+  # Verification
+  verified: Boolean!
+  verificationMethod: VerificationMethod
+}
+
+type Endorsement {
+  endorser: String!
+  relationship: String!
+  endorsedAt: DateTime!
+}
+
+# ============================================================================
+# REFERENCES
+# ============================================================================
+
+type Reference {
+  id: ID!
+
+  # Reference details
+  name: String!
+  title: String
+  company: String
+  relationship: String!
+
+  # Contact
+  email: String!
+  phoneNumber: String
+
+  # Interaction
+  howLongKnown: String
+  canContact: Boolean!
+  contacted: Boolean!
+
+  # Response
+  recommendation: String
+  rating: Int
+  responseDate: DateTime
+}
+
+# ============================================================================
+# PERSONAL STATEMENT
+# ============================================================================
+
+type PersonalStatement {
+  id: ID!
+  content: String!
+  wordCount: Int!
+
+  # Constraints
+  maxWords: Int
+  minWords: Int
+
+  # AI assistance metadata
+  aiAssisted: Boolean!
+  aiTool: String
+  humanEdited: Boolean!
+
+  # Version tracking
+  versions: [PersonalStatementVersion!]!
+  currentVersion: Int!
+}
+
+type PersonalStatementVersion {
+  version: Int!
+  content: String!
+  createdAt: DateTime!
+  aiAssisted: Boolean!
+}
+
+# ============================================================================
+# VERIFICATION & ATTESTATION
+# ============================================================================
+
+type Attestation {
+  id: ID!
+  type: AttestationType!
+  statement: String!
+  agreedAt: DateTime!
+  ipAddress: String
+  signature: Ed448Signature
+}
+
+enum AttestationType {
+  ACCURACY_DECLARATION
+  BACKGROUND_CHECK_CONSENT
+  DATA_PROCESSING_CONSENT
+  TERMS_ACCEPTANCE
+  ELIGIBILITY_CONFIRMATION
+  CONFLICT_OF_INTEREST
+  CUSTOM
+}
+
+type Verification {
+  id: ID!
+  type: VerificationType!
+  status: VerificationStatus!
+  verifiedAt: DateTime
+  verifiedBy: String
+  expiresAt: DateTime
+  metadata: JSON
+}
+
+enum VerificationStatus {
+  PENDING
+  IN_PROGRESS
+  VERIFIED
+  FAILED
+  EXPIRED
+}
+
+type VerifiedDocument {
+  id: ID!
+  type: String!
+  fileName: String!
+  fileSize: Int!
+  mimeType: String!
+  hash: BLAKE3Hash!
+  uploadedAt: DateTime!
+
+  # Encryption
+  encrypted: Boolean!
+  encryptionMethod: String
+
+  # Verification
+  verified: Boolean!
+  verifiedBy: String
+  verifiedAt: DateTime
+}
+
+# ============================================================================
+# VALIDATION
+# ============================================================================
+
+type ValidationResult {
+  valid: Boolean!
+  errors: [ValidationError!]!
+  warnings: [ValidationWarning!]!
+  completeness: Float!
+  score: Int
+}
+
+type ValidationError {
+  field: String!
+  message: String!
+  code: String!
+  constraint: String
+}
+
+type ValidationWarning {
+  field: String!
+  message: String!
+  suggestion: String
+}
+
+# ============================================================================
+# PREFERENCES & CONFIGURATION
+# ============================================================================
+
+type ApplicationPreferences {
+  # Auto-fill settings
+  enableAutoFill: Boolean!
+  autoFillSources: [DataSource!]!
+
+  # AI assistance
+  enableAIAssistance: Boolean!
+  aiProvider: AIProvider!
+
+  # Privacy
+  dataRetentionDays: Int!
+  shareWithEmployers: Boolean!
+
+  # CUE preferences
+  preferenceScripts: [PreferenceScript!]!
+}
+
+type PreferenceScript {
+  id: ID!
+  name: String!
+  version: String!
+  provider: String!
+  cueDocument: CUEDocument!
+  appliedAt: DateTime!
+}
+
+enum DataSource {
+  LINKEDIN
+  GITHUB
+  GOOGLE
+  MICROSOFT
+  STORED_PROFILE
+  MANUAL_ENTRY
+}
+
+enum AIProvider {
+  MISTRAL_7B
+  CLAUDE
+  GPT4
+  GEMINI
+  LOCAL_SLM
+  NONE
+}
+
+# ============================================================================
+# TEMPORAL TRACKING
+# ============================================================================
+
+type ApplicationHistory {
+  id: ID!
+  version: Int!
+  changedAt: DateTime!
+  changedBy: String!
+  changes: JSON!
+  snapshot: Application
+}
+
+# ============================================================================
+# SUPPORTING TYPES
+# ============================================================================
+
+type Location {
+  city: String
+  state: String
+  country: String!
+  remote: Boolean!
+}
+
+type SalaryRange {
+  min: Float
+  max: Float
+  currency: String!
+  period: SalaryPeriod!
+}
+
+enum SalaryPeriod {
+  HOURLY
+  DAILY
+  WEEKLY
+  MONTHLY
+  ANNUALLY
+}
+
+type LinkedInProfile {
+  profileUrl: String!
+  verified: Boolean!
+  lastSynced: DateTime
+}
+
+type GitHubProfile {
+  username: String!
+  profileUrl: String!
+  verified: Boolean!
+  lastSynced: DateTime
+}
+
+type PrivacySettings {
+  shareWithThirdParties: Boolean!
+  allowTracking: Boolean!
+  dataRetentionDays: Int!
+  deleteAfterSubmission: Boolean!
+}
+
+type AutoFillPreferences {
+  enabledSources: [DataSource!]!
+  priority: [DataSource!]!
+  manualOverride: Boolean!
+}
+
+type CustomField {
+  id: ID!
+  name: String!
+  value: JSON!
+  type: FieldDataType!
+  required: Boolean!
+}
+
+# ============================================================================
+# MUTATIONS
+# ============================================================================
+
+type Mutation {
+  # Application management
+  createApplication(input: CreateApplicationInput!): Application!
+  updateApplication(id: ID!, input: UpdateApplicationInput!): Application!
+  submitApplication(id: ID!): Application!
+  withdrawApplication(id: ID!): Application!
+
+  # Auto-fill operations
+  autoFillFromLinkedIn(applicationId: ID!): Application!
+  autoFillFromSource(applicationId: ID!, source: DataSource!): Application!
+
+  # AI assistance
+  generatePersonalStatement(applicationId: ID!, prompt: String!): PersonalStatement!
+  improvePersonalStatement(statementId: ID!): PersonalStatement!
+
+  # Verification
+  requestVerification(applicationId: ID!, type: VerificationType!): Verification!
+  submitAttestation(applicationId: ID!, attestation: AttestationInput!): Attestation!
+
+  # Preference scripts
+  uploadPreferenceScript(input: PreferenceScriptInput!): PreferenceScript!
+  applyPreferenceScript(applicationId: ID!, scriptId: ID!): Application!
+}
+
+# ============================================================================
+# QUERIES
+# ============================================================================
+
+type Query {
+  # Application queries
+  application(id: ID!): Application
+  myApplications(status: ApplicationStatus, limit: Int, offset: Int): [Application!]!
+
+  # Target queries
+  searchJobs(query: String!, filters: JobFilters): [ApplicationTarget!]!
+  searchPrograms(query: String!, filters: ProgramFilters): [ApplicationTarget!]!
+
+  # Preference scripts
+  browsePreferenceScripts(category: String, provider: String): [PreferenceScript!]!
+
+  # Validation
+  validateApplication(id: ID!): ValidationResult!
+  previewAutoFill(source: DataSource!): JSON!
+
+  # Employer queries
+  employerRequirements(companyId: ID!): ApplicationRequirements!
+}
+
+# ============================================================================
+# SUBSCRIPTIONS
+# ============================================================================
+
+type Subscription {
+  applicationUpdated(id: ID!): Application!
+  verificationStatusChanged(applicationId: ID!): Verification!
+}
+
+# ============================================================================
+# INPUT TYPES
+# ============================================================================
+
+input CreateApplicationInput {
+  targetId: ID!
+  applicantData: ApplicantInput!
+  preferences: ApplicationPreferencesInput
+}
+
+input UpdateApplicationInput {
+  personalStatement: PersonalStatementInput
+  employmentHistory: [EmploymentInput!]
+  educationHistory: [EducationInput!]
+  skills: [SkillInput!]
+  certifications: [CertificationInput!]
+  references: [ReferenceInput!]
+  customFields: [CustomFieldInput!]
+}
+
+input ApplicantInput {
+  personalInfo: PersonalInfoInput!
+  contactInfo: ContactInfoInput!
+}
+
+input PersonalInfoInput {
+  firstName: String!
+  lastName: String!
+  dateOfBirth: DateTime
+}
+
+input ContactInfoInput {
+  email: String!
+  phoneNumber: String
+  address: AddressInput
+}
+
+input AddressInput {
+  street: String!
+  city: String!
+  postalCode: String!
+  country: String!
+}
+
+input PersonalStatementInput {
+  content: String!
+  aiAssisted: Boolean
+  aiTool: String
+}
+
+input EmploymentInput {
+  company: String!
+  position: String!
+  startDate: DateTime!
+  endDate: DateTime
+  current: Boolean
+  description: String
+}
+
+input EducationInput {
+  institution: String!
+  degree: String!
+  fieldOfStudy: String!
+  startDate: DateTime!
+  endDate: DateTime
+}
+
+input SkillInput {
+  name: String!
+  category: SkillCategory!
+  proficiencyLevel: ProficiencyLevel!
+}
+
+input CertificationInput {
+  name: String!
+  issuingOrganization: String!
+  issueDate: DateTime!
+  credentialId: String
+}
+
+input ReferenceInput {
+  name: String!
+  email: String!
+  relationship: String!
+  canContact: Boolean!
+}
+
+input CustomFieldInput {
+  name: String!
+  value: JSON!
+  type: FieldDataType!
+}
+
+input AttestationInput {
+  type: AttestationType!
+  statement: String!
+}
+
+input PreferenceScriptInput {
+  name: String!
+  version: String!
+  provider: String!
+  cueDocument: CUEDocument!
+  category: String
+  description: String
+}
+
+input ApplicationPreferencesInput {
+  enableAutoFill: Boolean
+  autoFillSources: [DataSource!]
+  enableAIAssistance: Boolean
+  aiProvider: AIProvider
+}
+
+input JobFilters {
+  location: String
+  remote: Boolean
+  salaryMin: Float
+  industry: String
+  companySize: CompanySize
+}
+
+input ProgramFilters {
+  country: String
+  degreeLevel: DegreeLevel
+  fieldOfStudy: String
+}
