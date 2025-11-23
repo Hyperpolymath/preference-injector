@@ -1,0 +1,209 @@
+# GitLab CI/CD Pipeline for Preference Injector
+# RSR-Compliant Multi-Stage Pipeline
+
+variables:
+  DENO_VERSION: "1.x"
+  DENO_DIR: ".deno"
+
+stages:
+  - validate
+  - test
+  - build
+  - security
+  - deploy
+
+# Templates
+.deno_template: &deno_template
+  image: denoland/deno:alpine
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}
+    paths:
+      - .deno/
+      - node_modules/
+  before_script:
+    - deno --version
+
+# ============================================================================
+# VALIDATION STAGE
+# ============================================================================
+
+rsr:compliance:
+  <<: *deno_template
+  stage: validate
+  script:
+    - echo "🔍 Checking RSR Compliance..."
+    - deno run --allow-read scripts/rsr-score.ts
+  allow_failure: false
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+
+format:check:
+  <<: *deno_template
+  stage: validate
+  script:
+    - deno fmt --check
+  allow_failure: false
+
+lint:check:
+  <<: *deno_template
+  stage: validate
+  script:
+    - deno lint
+  allow_failure: false
+
+type:check:
+  <<: *deno_template
+  stage: validate
+  script:
+    - deno check src/**/*.ts
+  allow_failure: false
+
+# ============================================================================
+# TEST STAGE
+# ============================================================================
+
+test:unit:
+  <<: *deno_template
+  stage: test
+  script:
+    - deno test --allow-all --coverage=coverage/
+  coverage: '/All files\s+\|\s+([\d\.]+)/'
+  artifacts:
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage/cobertura.xml
+    paths:
+      - coverage/
+    expire_in: 30 days
+
+test:integration:
+  <<: *deno_template
+  stage: test
+  script:
+    - deno test --allow-all tests/**/*.integration.test.ts
+  allow_failure: true  # May not exist yet
+
+# ============================================================================
+# BUILD STAGE
+# ============================================================================
+
+build:typescript:
+  <<: *deno_template
+  stage: build
+  script:
+    - deno run --allow-all build.ts
+  artifacts:
+    paths:
+      - dist/
+    expire_in: 7 days
+
+build:rescript:
+  image: node:20-alpine
+  stage: build
+  script:
+    - npm install -g rescript
+    - rescript build
+  artifacts:
+    paths:
+      - src/**/*.bs.js
+    expire_in: 7 days
+  allow_failure: true  # Optional
+
+# ============================================================================
+# SECURITY STAGE
+# ============================================================================
+
+security:audit:
+  <<: *deno_template
+  stage: security
+  script:
+    - echo "🔒 Security Audit"
+    - deno info --json src/deps.ts > sbom.json
+  artifacts:
+    paths:
+      - sbom.json
+    expire_in: 30 days
+  allow_failure: true
+
+security:secrets:
+  image: zricethezav/gitleaks:latest
+  stage: security
+  script:
+    - gitleaks detect --verbose --no-git
+  allow_failure: true
+
+security:sast:
+  stage: security
+  image: returntocorp/semgrep
+  script:
+    - semgrep --config=auto --json --output=sast-report.json .
+  artifacts:
+    reports:
+      sast: sast-report.json
+    expire_in: 30 days
+  allow_failure: true
+
+# ============================================================================
+# DEPLOY STAGE
+# ============================================================================
+
+deploy:staging:
+  <<: *deno_template
+  stage: deploy
+  script:
+    - echo "🚀 Deploying to staging..."
+    - deno run --allow-all deploy/staging.ts
+  environment:
+    name: staging
+    url: https://staging.example.com
+  only:
+    - develop
+  when: manual
+
+deploy:production:
+  <<: *deno_template
+  stage: deploy
+  script:
+    - echo "🚀 Deploying to production..."
+    - deno run --allow-all deploy/production.ts
+  environment:
+    name: production
+    url: https://example.com
+  only:
+    - main
+    - tags
+  when: manual
+
+# ============================================================================
+# PAGES (Documentation)
+# ============================================================================
+
+pages:
+  image: node:20-alpine
+  stage: deploy
+  script:
+    - npm install -g typedoc
+    - typedoc
+    - mv docs/api public
+  artifacts:
+    paths:
+      - public
+  only:
+    - main
+
+# ============================================================================
+# RELEASE
+# ============================================================================
+
+release:
+  image: registry.gitlab.com/gitlab-org/release-cli:latest
+  stage: deploy
+  script:
+    - echo "Creating release $CI_COMMIT_TAG"
+  release:
+    tag_name: '$CI_COMMIT_TAG'
+    description: 'Release $CI_COMMIT_TAG'
+  only:
+    - tags

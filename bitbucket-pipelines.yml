@@ -1,0 +1,116 @@
+# Bitbucket Pipelines for Preference Injector
+# RSR-Compliant CI/CD
+
+image: denoland/deno:alpine
+
+definitions:
+  caches:
+    deno: .deno
+
+pipelines:
+  default:
+    - step:
+        name: RSR Compliance Check
+        caches:
+          - deno
+        script:
+          - deno run --allow-read scripts/rsr-score.ts
+
+    - parallel:
+        - step:
+            name: Lint & Format
+            caches:
+              - deno
+            script:
+              - deno fmt --check
+              - deno lint
+
+        - step:
+            name: Type Check
+            caches:
+              - deno
+            script:
+              - deno check src/**/*.ts
+
+        - step:
+            name: Tests
+            caches:
+              - deno
+            script:
+              - deno test --allow-all --coverage=coverage/
+            artifacts:
+              - coverage/**
+
+    - step:
+        name: Build
+        caches:
+          - deno
+        script:
+          - deno run --allow-all build.ts
+        artifacts:
+          - dist/**
+
+    - step:
+        name: Security Audit
+        script:
+          - deno info --json src/deps.ts > sbom.json
+        artifacts:
+          - sbom.json
+
+  branches:
+    main:
+      - step:
+          name: RSR Compliance
+          caches:
+            - deno
+          script:
+            - deno run --allow-read scripts/rsr-score.ts
+
+      - step:
+          name: Full Test Suite
+          caches:
+            - deno
+          script:
+            - deno test --allow-all --coverage=coverage/
+            - deno coverage coverage/
+
+      - step:
+          name: Build Production
+          caches:
+            - deno
+          script:
+            - deno run --allow-all build.ts --optimize
+          artifacts:
+            - dist/**
+
+      - step:
+          name: Deploy Production
+          deployment: production
+          script:
+            - echo "Deploying to production..."
+            - deno run --allow-all deploy/production.ts
+
+  pull-requests:
+    '**':
+      - step:
+          name: PR Validation
+          caches:
+            - deno
+          script:
+            - deno fmt --check
+            - deno lint
+            - deno test --allow-all
+            - deno run --allow-read scripts/rsr-score.ts
+
+  tags:
+    'v*':
+      - step:
+          name: Release Build
+          caches:
+            - deno
+          script:
+            - deno run --allow-all build.ts
+            - deno compile --allow-all --output bin/preference-injector src/main.ts
+          artifacts:
+            - dist/**
+            - bin/**

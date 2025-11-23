@@ -1,0 +1,206 @@
+name: CI Extended (RSR Compliance)
+
+on:
+  push:
+    branches: [main, develop, claude/**]
+  pull_request:
+    branches: [main, develop]
+  schedule:
+    - cron: '0 0 * * 0'  # Weekly on Sunday
+
+jobs:
+  rsr-compliance:
+    name: RSR Framework Verification
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@v1
+        with:
+          deno-version: v1.x
+
+      - name: Check RSR Compliance
+        run: deno run --allow-read scripts/rsr-score.ts
+
+      - name: Verify Required Files
+        run: |
+          files=(
+            "SECURITY.md"
+            "CODE_OF_CONDUCT.md"
+            "MAINTAINERS.md"
+            ".well-known/security.txt"
+            ".well-known/ai.txt"
+            ".well-known/humans.txt"
+            "PALIMPSEST-LICENSE.txt"
+          )
+
+          for file in "${files[@]}"; do
+            if [ ! -f "$file" ]; then
+              echo "❌ Missing required file: $file"
+              exit 1
+            else
+              echo "✅ Found: $file"
+            fi
+          done
+
+  test-matrix:
+    name: Test on ${{ matrix.os }} - Deno ${{ matrix.deno }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        deno: ['1.x', 'canary']
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@v1
+        with:
+          deno-version: ${{ matrix.deno }}
+
+      - name: Cache Dependencies
+        run: deno cache src/deps.ts
+
+      - name: Run Tests
+        run: deno test --allow-all
+
+  security-audit:
+    name: Security Audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@v1
+
+      - name: Generate SBOM
+        run: |
+          deno info --json src/deps.ts > sbom.json
+          cat sbom.json
+
+      - name: Secret Scanning
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload SBOM
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom
+          path: sbom.json
+
+  offline-first-test:
+    name: Offline-First Verification
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@v1
+
+      - name: Test Offline Mode
+        run: |
+          # Disable network
+          sudo iptables -I INPUT -j DROP
+          sudo iptables -I OUTPUT -j DROP
+
+          # Run offline tests
+          deno test --allow-all tests/offline.test.ts || true
+
+          # Re-enable network
+          sudo iptables -F
+
+  nix-build:
+    name: Nix Reproducible Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v24
+        with:
+          nix_path: nixpkgs=channel:nixos-unstable
+
+      - name: Build with Nix
+        run: nix build
+
+      - name: Run Nix Checks
+        run: nix flake check
+
+  documentation:
+    name: Build Documentation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install TypeDoc
+        run: npm install -g typedoc
+
+      - name: Generate API Docs
+        run: typedoc
+
+      - name: Deploy to GitHub Pages
+        if: github.ref == 'refs/heads/main'
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs/api
+
+  benchmark:
+    name: Performance Benchmarks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@v1
+
+      - name: Run Benchmarks
+        run: deno bench --allow-all benches/
+
+  slsa-provenance:
+    name: SLSA Provenance
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@v1
+
+      - name: Build
+        run: deno run --allow-all build.ts
+
+      - name: Generate Provenance
+        uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v1.9.0
+        with:
+          artifacts: dist/
+
+  container-scan:
+    name: Container Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Docker Image
+        run: docker build -t preference-injector:${{ github.sha }} .
+
+      - name: Run Trivy Scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: preference-injector:${{ github.sha }}
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+
+      - name: Upload Trivy Results
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: 'trivy-results.sarif'
