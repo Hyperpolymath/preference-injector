@@ -127,9 +127,17 @@ else
   echo "  ❌ Bronze: 0/30 points"
 fi
 total_bronze=$((total_bronze + 30))
+
+# Check for post-quantum crypto implementation
+if [ -f "src/crypto/mod.ts" ] && [ -f "src/crypto/signatures.ts" ] && [ -f "src/crypto/keyexchange.ts" ] && [ -f "src/crypto/hashing.ts" ]; then
+  echo "  ✅ Silver: 40/40 points"
+  earned_silver=$((earned_silver + 40))
+else
+  echo "  ⚠️  Silver: 0/40 points (Post-quantum crypto)"
+fi
 total_silver=$((total_silver + 40))
+
 total_gold=$((total_gold + 30))
-echo "  ⚠️  Silver: 0/40 points (Post-quantum crypto)"
 echo "  ⚠️  Gold: 0/30 points (Formal verification)"
 
 # 8. .well-known/

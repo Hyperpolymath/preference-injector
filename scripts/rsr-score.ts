@@ -135,7 +135,16 @@ const checks: ComplianceCheck[] = [
     },
     silver: {
       points: 40,
-      check: async () => false // TODO: Post-quantum crypto implemented
+      check: async () => {
+        const cryptoFiles = [
+          "src/crypto/mod.ts",
+          "src/crypto/signatures.ts",
+          "src/crypto/keyexchange.ts",
+          "src/crypto/hashing.ts",
+        ];
+        const checks = await Promise.all(cryptoFiles.map(fileExists));
+        return checks.every(Boolean);
+      }
     },
     gold: {
       points: 30,
