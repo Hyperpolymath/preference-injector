@@ -1,0 +1,36 @@
+= preference-injector - Citation Guide
+:toc:
+
+== BibTeX
+
+[source,bibtex]
+----
+@software{preference-injector_2025,
+  author = {Polymath, Hyper},
+  title = {preference-injector},
+  year = {2025},
+  url = {https://github.com/hyperpolymath/preference-injector},
+  license = {AGPL-3.0-or-later}
+}
+----
+
+== Harvard Style
+
+Polymath, H. (2025) _preference-injector_ [Computer software]. Available at: https://github.com/hyperpolymath/preference-injector
+
+== OSCOLA
+
+Hyper Polymath, 'preference-injector' (2025) <https://github.com/hyperpolymath/preference-injector>
+
+== MLA
+
+Polymath, Hyper. "preference-injector." 2025, github.com/hyperpolymath/preference-injector.
+
+== APA 7
+
+Polymath, H. (2025). _preference-injector_ [Computer software]. GitHub. https://github.com/hyperpolymath/preference-injector
+
+== See Also
+
+* link:../CITATION.cff[CITATION.cff]
+* link:../codemeta.json[codemeta.json]
