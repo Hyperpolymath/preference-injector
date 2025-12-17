@@ -11,7 +11,7 @@
 (define-public preference_injector
   (package
     (name "preference-injector")
-    (version "0.1.0")
+    (version "1.0.0")
     (source (local-file "." "preference-injector-checkout"
                         #:recursive? #t
                         #:select? (git-predicate ".")))
@@ -19,7 +19,7 @@
     (synopsis "ReScript application")
     (description "ReScript application - part of the RSR ecosystem.")
     (home-page "https://github.com/hyperpolymath/preference-injector")
-    (license license:agpl3+)))
+    (license (list license:expat license:agpl3+))))
 
 ;; Return package for guix shell
 preference_injector

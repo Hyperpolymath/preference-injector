@@ -16,7 +16,7 @@
 
         # Project metadata
         pname = "preference-injector";
-        version = "2.0.0";
+        version = "1.0.0";
 
         # Development dependencies
         nativeBuildInputs = with pkgs; [
@@ -156,7 +156,7 @@
           meta = with pkgs.lib; {
             description = "Universal Application Automation Standard with Post-Quantum Security";
             homepage = "https://github.com/Hyperpolymath/preference-injector";
-            license = with licenses; [ mit ];  # Note: Also Palimpsest v0.8
+            license = with licenses; [ mit agpl3Plus ];  # Dual-licensed: MIT OR AGPL-3.0-or-later
             maintainers = [];  # Add maintainers here
             platforms = platforms.all;
           };

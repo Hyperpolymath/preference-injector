@@ -103,14 +103,14 @@ const injector = new PreferenceInjector({
 
 ## Known Security Limitations
 
-### Current Limitations (v2.0)
+### Current Limitations (v1.0)
 
 1. **Cryptography Status**: Post-quantum primitives designed but not fully implemented
 2. **Offline Mode**: Local-first architecture planned but not complete
 3. **WASM Sandbox**: Untrusted code execution not yet sandboxed
 4. **Formal Verification**: SPARK Ada proofs not implemented
 
-### Planned Enhancements (v2.1+)
+### Planned Enhancements (v1.1+)
 
 - Full post-quantum cryptography implementation
 - WASM sandboxing for user-provided preference scripts
@@ -177,8 +177,8 @@ Permissions-Policy: geolocation=(), microphone=(), camera=()
 
 - ✅ **GDPR**: Data protection and privacy (EU)
 - ✅ **CCPA**: California Consumer Privacy Act (US)
-- ⚠️ **SOC 2**: In progress (expected Q2 2024)
-- ⚠️ **ISO 27001**: Planned for 2024
+- ⚠️ **SOC 2**: In progress (expected Q2 2026)
+- ⚠️ **ISO 27001**: Planned for 2026
 
 ### Certifications
 
@@ -190,14 +190,14 @@ Permissions-Policy: geolocation=(), microphone=(), camera=()
 
 ### Last Audit
 
-- **Date**: 2024-01-15
-- **Auditor**: Internal review
-- **Findings**: 0 critical, 2 high, 5 medium, 12 low
-- **Status**: High and medium findings remediated
+- **Date**: 2025-12-17
+- **Auditor**: Internal review (Claude Code assisted)
+- **Findings**: 0 critical, 0 high, 4 medium (fixed), 2 low
+- **Status**: All medium findings remediated
 
 ### Next Audit
 
-- **Scheduled**: 2024-Q2
+- **Scheduled**: 2026-Q1
 - **Type**: Third-party penetration testing
 - **Scope**: Full application security assessment
 
@@ -229,6 +229,6 @@ We thank the following security researchers for responsible disclosure:
 
 ---
 
-**Last Updated**: 2024-01-15
-**Policy Version**: 2.0
-**Next Review**: 2024-07-15
+**Last Updated**: 2025-12-17
+**Policy Version**: 2.1
+**Next Review**: 2026-06-17
