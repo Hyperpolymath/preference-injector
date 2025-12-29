@@ -2,6 +2,8 @@
 // SPDX-FileCopyrightText: 2024 Hyperpolymath
 = Preference Injector
 
+image:https://img.shields.io/badge/license-AGPL--3.0-blue.svg[AGPL-3.0,link="https://www.gnu.org/licenses/agpl-3.0"] image:https://img.shields.io/badge/philosophy-Palimpsest-purple.svg[Palimpsest,link="https://github.com/hyperpolymath/palimpsest-licence"]
+
 A powerful, type-safe preference injection system for dynamic configuration management.
 
 Built with *ReScript* and *Deno* following the Hyperpolymath Language Standard.
